@@ -1,0 +1,337 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		70419D4E1D25FEBE00C89942 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 70419D4D1D25FEBE00C89942 /* main.m */; };
+		70419D511D25FEBE00C89942 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 70419D501D25FEBE00C89942 /* AppDelegate.m */; };
+		70419D541D25FEBE00C89942 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70419D531D25FEBE00C89942 /* ViewController.m */; };
+		70419D571D25FEBE00C89942 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 70419D551D25FEBE00C89942 /* Main.storyboard */; };
+		70419D591D25FEBE00C89942 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 70419D581D25FEBE00C89942 /* Assets.xcassets */; };
+		70419D5C1D25FEBE00C89942 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 70419D5A1D25FEBE00C89942 /* LaunchScreen.storyboard */; };
+		70419D681D2602E100C89942 /* CKVideoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 70419D651D2602E100C89942 /* CKVideoManager.m */; };
+		70419D691D2602E100C89942 /* CKVideoOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 70419D671D2602E100C89942 /* CKVideoOperation.m */; };
+		70419D6C1D26033200C89942 /* CKVideoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 70419D6B1D26033200C89942 /* CKVideoModel.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		70419D491D25FEBE00C89942 /* CKDownLoadManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CKDownLoadManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		70419D4D1D25FEBE00C89942 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		70419D4F1D25FEBE00C89942 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		70419D501D25FEBE00C89942 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		70419D521D25FEBE00C89942 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		70419D531D25FEBE00C89942 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		70419D561D25FEBE00C89942 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		70419D581D25FEBE00C89942 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		70419D5B1D25FEBE00C89942 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		70419D5D1D25FEBE00C89942 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		70419D641D2602E100C89942 /* CKVideoManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKVideoManager.h; sourceTree = "<group>"; };
+		70419D651D2602E100C89942 /* CKVideoManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKVideoManager.m; sourceTree = "<group>"; };
+		70419D661D2602E100C89942 /* CKVideoOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKVideoOperation.h; sourceTree = "<group>"; };
+		70419D671D2602E100C89942 /* CKVideoOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKVideoOperation.m; sourceTree = "<group>"; };
+		70419D6A1D26033200C89942 /* CKVideoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKVideoModel.h; sourceTree = "<group>"; };
+		70419D6B1D26033200C89942 /* CKVideoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKVideoModel.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		70419D461D25FEBE00C89942 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		70419D401D25FEBE00C89942 = {
+			isa = PBXGroup;
+			children = (
+				70419D4B1D25FEBE00C89942 /* CKDownLoadManager */,
+				70419D4A1D25FEBE00C89942 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		70419D4A1D25FEBE00C89942 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				70419D491D25FEBE00C89942 /* CKDownLoadManager.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		70419D4B1D25FEBE00C89942 /* CKDownLoadManager */ = {
+			isa = PBXGroup;
+			children = (
+				70419D631D2602E100C89942 /* DownLoadManager */,
+				70419D4F1D25FEBE00C89942 /* AppDelegate.h */,
+				70419D501D25FEBE00C89942 /* AppDelegate.m */,
+				70419D521D25FEBE00C89942 /* ViewController.h */,
+				70419D531D25FEBE00C89942 /* ViewController.m */,
+				70419D551D25FEBE00C89942 /* Main.storyboard */,
+				70419D6A1D26033200C89942 /* CKVideoModel.h */,
+				70419D6B1D26033200C89942 /* CKVideoModel.m */,
+				70419D4C1D25FEBE00C89942 /* Supporting Files */,
+			);
+			path = CKDownLoadManager;
+			sourceTree = "<group>";
+		};
+		70419D4C1D25FEBE00C89942 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				70419D581D25FEBE00C89942 /* Assets.xcassets */,
+				70419D5A1D25FEBE00C89942 /* LaunchScreen.storyboard */,
+				70419D5D1D25FEBE00C89942 /* Info.plist */,
+				70419D4D1D25FEBE00C89942 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		70419D631D2602E100C89942 /* DownLoadManager */ = {
+			isa = PBXGroup;
+			children = (
+				70419D641D2602E100C89942 /* CKVideoManager.h */,
+				70419D651D2602E100C89942 /* CKVideoManager.m */,
+				70419D661D2602E100C89942 /* CKVideoOperation.h */,
+				70419D671D2602E100C89942 /* CKVideoOperation.m */,
+			);
+			path = DownLoadManager;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		70419D481D25FEBE00C89942 /* CKDownLoadManager */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 70419D601D25FEBE00C89942 /* Build configuration list for PBXNativeTarget "CKDownLoadManager" */;
+			buildPhases = (
+				70419D451D25FEBE00C89942 /* Sources */,
+				70419D461D25FEBE00C89942 /* Frameworks */,
+				70419D471D25FEBE00C89942 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CKDownLoadManager;
+			productName = CKDownLoadManager;
+			productReference = 70419D491D25FEBE00C89942 /* CKDownLoadManager.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		70419D411D25FEBE00C89942 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = CK;
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = CK;
+				TargetAttributes = {
+					70419D481D25FEBE00C89942 = {
+						CreatedOnToolsVersion = 7.3;
+					};
+				};
+			};
+			buildConfigurationList = 70419D441D25FEBE00C89942 /* Build configuration list for PBXProject "CKDownLoadManager" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 70419D401D25FEBE00C89942;
+			productRefGroup = 70419D4A1D25FEBE00C89942 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				70419D481D25FEBE00C89942 /* CKDownLoadManager */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		70419D471D25FEBE00C89942 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				70419D5C1D25FEBE00C89942 /* LaunchScreen.storyboard in Resources */,
+				70419D591D25FEBE00C89942 /* Assets.xcassets in Resources */,
+				70419D571D25FEBE00C89942 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		70419D451D25FEBE00C89942 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				70419D541D25FEBE00C89942 /* ViewController.m in Sources */,
+				70419D691D2602E100C89942 /* CKVideoOperation.m in Sources */,
+				70419D511D25FEBE00C89942 /* AppDelegate.m in Sources */,
+				70419D6C1D26033200C89942 /* CKVideoModel.m in Sources */,
+				70419D4E1D25FEBE00C89942 /* main.m in Sources */,
+				70419D681D2602E100C89942 /* CKVideoManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		70419D551D25FEBE00C89942 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				70419D561D25FEBE00C89942 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		70419D5A1D25FEBE00C89942 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				70419D5B1D25FEBE00C89942 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		70419D5E1D25FEBE00C89942 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		70419D5F1D25FEBE00C89942 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		70419D611D25FEBE00C89942 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = CKDownLoadManager/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "cn.CK-Dakucha.CKDownLoadManager";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		70419D621D25FEBE00C89942 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = CKDownLoadManager/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "cn.CK-Dakucha.CKDownLoadManager";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		70419D441D25FEBE00C89942 /* Build configuration list for PBXProject "CKDownLoadManager" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				70419D5E1D25FEBE00C89942 /* Debug */,
+				70419D5F1D25FEBE00C89942 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		70419D601D25FEBE00C89942 /* Build configuration list for PBXNativeTarget "CKDownLoadManager" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				70419D611D25FEBE00C89942 /* Debug */,
+				70419D621D25FEBE00C89942 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 70419D411D25FEBE00C89942 /* Project object */;
+}
