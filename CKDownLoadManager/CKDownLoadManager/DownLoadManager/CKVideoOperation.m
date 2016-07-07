@@ -218,16 +218,16 @@ static NSTimeInterval kTimeoutInterval = 60.0;
 
 @end
 
-static const void *s_zx_videoModelKey = "s_zx_videoModelKey";
+static const void *videoModelKey = "videoModelKey";
 
 @implementation NSURLSessionTask (VideoModel)
 
 - (void)setZx_videoModel:(CKVideoModel *)zx_videoModel {
-    objc_setAssociatedObject(self, s_zx_videoModelKey, zx_videoModel, OBJC_ASSOCIATION_ASSIGN);
+    objc_setAssociatedObject(self, videoModelKey, zx_videoModel, OBJC_ASSOCIATION_ASSIGN);
 }
 
 - (CKVideoModel *)zx_videoModel {
-    return objc_getAssociatedObject(self, s_zx_videoModelKey);
+    return objc_getAssociatedObject(self, videoModelKey);
 }
 
 @end

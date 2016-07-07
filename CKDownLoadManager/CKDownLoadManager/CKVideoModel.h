@@ -25,6 +25,11 @@ typedef void(^CKVideoProgressChanged)(CKVideoModel *model);
 
 @interface CKVideoModel : NSObject
 
+@property (nonatomic, copy) NSString *videoId;
+@property (nonatomic, copy) NSString *videoUrl;
+@property (nonatomic, copy) NSString *imageUrl;
+@property (nonatomic, copy) NSString *title;
+
 @property (nonatomic, strong        ) NSString               *fileName;
 //记录断点下载
 @property (nonatomic, strong        ) NSData                 *resumeData;
