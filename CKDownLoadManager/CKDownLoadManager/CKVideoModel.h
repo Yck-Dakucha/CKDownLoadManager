@@ -8,17 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "CKVideoModelProtocol.h"
 
 @class CKVideoModel;
 
-typedef NS_ENUM(NSInteger, CKVideoStatus) {
-    kCKVideoStatusNone = 0,       // 初始状态
-    kCKVideoStatusRunning = 1,    // 下载中
-    kCKVideoStatusSuspended = 2,  // 下载暂停
-    kCKVideoStatusCompleted = 3,  // 下载完成
-    kCKVideoStatusFailed  = 4,    // 下载失败
-    kCKVideoStatusWaiting = 5    // 等待下载
-};
 
 typedef void(^CKVideoStatusChanged)(CKVideoModel *model);
 typedef void(^CKVideoProgressChanged)(CKVideoModel *model);

@@ -7,9 +7,7 @@
 //
 
 #import "CKVideoManager.h"
-#import "CKVideoModel.h"
 #import "CKVideoOperation.h"
-#import "ZXDataManager.h"
 
 static CKVideoManager *_sg_videoManager = nil;
 
@@ -28,7 +26,6 @@ static CKVideoManager *_sg_videoManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sg_videoManager = [[self alloc] init];
-        [_sg_videoManager addVideoModels:[ZXDataManager zx_selectAllDownloading]];
     });
     return _sg_videoManager;
 }
@@ -52,17 +49,17 @@ static CKVideoManager *_sg_videoManager = nil;
     return _videoModels;
 }
 
-- (void)addVideoModels:(NSArray<CKVideoModel *> *)videoModels {
+- (void)addVideoModels:(NSArray<id<CKVideoModelProtocol>> *)videoModels {
     if ([videoModels isKindOfClass:[NSArray class]]) {
         [_videoModels addObjectsFromArray:videoModels];
     }
 }
 
-- (void)startWithVideoModel:(CKVideoModel *)videoModel {
+- (void)startWithVideoModel:(id<CKVideoModelProtocol>)videoModel {
     if (videoModel.status != kZXVideoStatusCompleted) {
         videoModel.status = kZXVideoStatusRunning;
         if (videoModel.operation == nil) {
-            videoModel.operation = [[ZXVideoOperation alloc] initWithModel:videoModel
+            videoModel.operation = [[CKVideoOperation alloc] initWithModel:videoModel
                                                                     session:self.session];
             [self.queue addOperation:videoModel.operation];
             [videoModel.operation start];

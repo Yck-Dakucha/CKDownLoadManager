@@ -7,6 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#import "CKVideoModelProtocol.h"
+
 
 @class CKVideoModel;
 
@@ -16,12 +19,11 @@
 
 + (instancetype)shared;
 
-- (void)addVideoModels:(NSArray<CKVideoModel *> *)videoModels;
-
-- (void)startWithVideoModel:(CKVideoModel *)videoModel;
-- (void)suspendWithVideoModel:(CKVideoModel *)videoModel;
+- (void)addVideoModels:(NSArray<id<CKVideoModelProtocol>> *)videoModels;
+- (void)startWithVideoModel:(id<CKVideoModelProtocol>)videoModel;
+- (void)suspendWithVideoModel:(id<CKVideoModelProtocol>)videoModel;
 - (void)suspendAllVideoModel;
-- (void)resumeWithVideoModel:(CKVideoModel *)videoModel;
-- (void)stopWiethVideoModel:(CKVideoModel *)videoModel;
+- (void)resumeWithVideoModel:(id<CKVideoModelProtocol>)videoModel;
+- (void)stopWiethVideoModel:(id<CKVideoModelProtocol>)videoModel;
 
 @end

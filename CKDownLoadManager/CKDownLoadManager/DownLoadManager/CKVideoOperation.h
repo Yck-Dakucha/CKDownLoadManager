@@ -7,20 +7,19 @@
 //
 
 #import <Foundation/Foundation.h>
-
-@class CKVideoModel;
+#import "CKVideoModelProtocol.h"
 
 @interface NSURLSessionTask (VideoModel)
 
-@property (nonatomic, weak) CKVideoModel *zx_videoModel;
+@property (nonatomic, weak) id<CKVideoModelProtocol> zx_videoModel;
 
 @end
 
 @interface CKVideoOperation : NSOperation
 
-- (instancetype)initWithModel:(CKVideoModel *)model session:(NSURLSession *)session;
+- (instancetype)initWithModel:(id<CKVideoModelProtocol>)model session:(NSURLSession *)session;
 
-@property (nonatomic, weak) CKVideoModel *model;
+@property (nonatomic, weak) id<CKVideoModelProtocol> model;
 @property (nonatomic, strong, readonly) NSURLSessionDownloadTask *downloadTask;
 
 - (void)suspend;

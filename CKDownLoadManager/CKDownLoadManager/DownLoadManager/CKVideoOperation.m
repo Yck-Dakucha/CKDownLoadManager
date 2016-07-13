@@ -7,7 +7,6 @@
 //
 
 #import "CKVideoOperation.h"
-#import "CKVideoModel.h"
 #import <objc/runtime.h>
 
 #define kKVOBlock(KEYPATH, BLOCK) \
@@ -29,7 +28,7 @@ static NSTimeInterval kTimeoutInterval = 60.0;
 
 @implementation CKVideoOperation
 
-- (instancetype)initWithModel:(CKVideoModel *)model session:(NSURLSession *)session {
+- (instancetype)initWithModel:(id<CKVideoModelProtocol>)model session:(NSURLSession *)session {
     if (self == [super init]) {
         self.model = model;
         self.session = session;
@@ -57,7 +56,7 @@ static NSTimeInterval kTimeoutInterval = 60.0;
 }
 
 - (void)statRequest {
-    NSURL *url = [NSURL URLWithString:self.model.videoDetail.videoAddress];
+    NSURL *url = [NSURL URLWithString:[self.model performSelector:@selector(videoUrl)]];
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url
                                                   cachePolicy:NSURLRequestUseProtocolCachePolicy
                                               timeoutInterval:kTimeoutInterval];
@@ -82,8 +81,7 @@ static NSTimeInterval kTimeoutInterval = 60.0;
         [self resume];
     } else {
         [self.task resume];
-        self.model.status = kZXVideoStatusRunning;
-        
+        [self.model performSelector:@selector(videoStateDidChanged:) withObject:@(kCKVideoStatusRunning)];
     }
     
     _executing = YES;

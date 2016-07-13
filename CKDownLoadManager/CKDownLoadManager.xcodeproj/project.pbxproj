@@ -35,6 +35,7 @@
 		70419D671D2602E100C89942 /* CKVideoOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKVideoOperation.m; sourceTree = "<group>"; };
 		70419D6A1D26033200C89942 /* CKVideoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKVideoModel.h; sourceTree = "<group>"; };
 		70419D6B1D26033200C89942 /* CKVideoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKVideoModel.m; sourceTree = "<group>"; };
+		7051C1B01D3614C30067B57E /* CKVideoModelProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKVideoModelProtocol.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +99,7 @@
 				70419D651D2602E100C89942 /* CKVideoManager.m */,
 				70419D661D2602E100C89942 /* CKVideoOperation.h */,
 				70419D671D2602E100C89942 /* CKVideoOperation.m */,
+				7051C1B01D3614C30067B57E /* CKVideoModelProtocol.h */,
 			);
 			path = DownLoadManager;
 			sourceTree = "<group>";

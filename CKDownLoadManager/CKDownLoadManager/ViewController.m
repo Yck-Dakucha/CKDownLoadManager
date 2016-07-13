@@ -62,7 +62,9 @@
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+    CKVideoModel *model = self.dataArray[indexPath.row];
+    cell.textLabel.text = model.title;
+    cell.detailTextLabel.text = [NSString ]
 }
 
 
