@@ -22,6 +22,8 @@ typedef NS_ENUM(NSInteger, CKVideoStatus) {
 
 @required
 - (NSString *)videoUrl;
+- (NSString *)resumePath;
+- (CKVideoStatus)videoStatus;
 
 @optional
 - (void)videoStateDidChanged:(CKVideoStatus)state;

@@ -23,15 +23,36 @@ static NSTimeInterval kTimeoutInterval = 60.0;
 
 @property (nonatomic, strong) NSURLSessionDownloadTask *task;
 @property (nonatomic, weak) NSURLSession *session;
+@property (nonatomic, strong) NSData *resumeData;
+@property (nonatomic, assign) CKVideoStatus videoStatus;
 
 @end
 
 @implementation CKVideoOperation
 
+- (NSData *)resumeData {
+    NSData *data = [NSData dataWithContentsOfFile:[self.model performSelector:@selector(resumePath)]];
+    if (data.bytes) {
+        return data;
+    }else {
+        return nil;
+    }
+}
+
+- (void)setVideoStatus:(CKVideoStatus)videoStatus {
+    _videoStatus = videoStatus;
+    if ([self.model respondsToSelector:@selector(videoStateDidChanged:)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.model performSelector:@selector(videoStateDidChanged:) withObject:@(_videoStatus)];
+        });
+    }
+}
+
 - (instancetype)initWithModel:(id<CKVideoModelProtocol>)model session:(NSURLSession *)session {
     if (self == [super init]) {
-        self.model = model;
-        self.session = session;
+        _model = model;
+        _session = session;
+        _videoStatus = (CKVideoStatus)[self.model performSelector:@selector(videoStatus)];
         [self statRequest];
     }
     return self;
@@ -77,13 +98,12 @@ static NSTimeInterval kTimeoutInterval = 60.0;
     }
     
     [self willChangeValueForKey:@"isExecuting"];
-    if (self.model.resumeData) {
+    if (self.resumeData) {
         [self resume];
     } else {
         [self.task resume];
-        [self.model performSelector:@selector(videoStateDidChanged:) withObject:@(kCKVideoStatusRunning)];
+        self.videoStatus = kCKVideoStatusRunning;
     }
-    
     _executing = YES;
     [self didChangeValueForKey:@"isExecuting"];
 }
@@ -109,6 +129,7 @@ static NSTimeInterval kTimeoutInterval = 60.0;
         
         [self.task cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
             NSFileManager *manager = [NSFileManager defaultManager];
+            NSString *kVideoTempPath = [self.model performSelector:@selector(resumePath)];
             BOOL existed = [manager fileExistsAtPath:kVideoTempPath];
             if (!existed) {
                 NSError *error;
@@ -118,31 +139,27 @@ static NSTimeInterval kTimeoutInterval = 60.0;
                 }
             }
 
-            NSString *pathName = [NSString stringWithFormat:@"Documents/VideoTemp/%@.mp4",weakSelf.model.fileName];
+            NSString *pathName = [NSString stringWithFormat:@"Documents/VideoTemp/%@.mp4",[weakSelf.model performSelector:@selector(filename)]];
             NSString *firePath = [NSHomeDirectory() stringByAppendingPathComponent:pathName];
             [resumeData writeToFile:firePath options:NSDataWritingAtomic error:nil];
 
             weakTask = nil;
             isExecuting = NO;
             [weakSelf didChangeValueForKey:@"isExecuting"];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                weakSelf.model.status = kZXVideoStatusSuspended;
-                [ZXDataManager zx_upDateDownloadingWithVideo:weakSelf.model];
-            });
+            weakSelf.videoStatus = kCKVideoStatusSuspended;
         }];
         [self.task suspend];
     }
 }
 
 - (void)resume {
-    if (self.model.status == kZXVideoStatusCompleted) {
+    if (self.videoStatus == kCKVideoStatusCompleted) {
         return;
     }
-    self.model.status = kZXVideoStatusRunning;
+    self.videoStatus = kCKVideoStatusRunning;
     
-    if (self.model.resumeData) {
-        self.task = [self.session downloadTaskWithResumeData:self.model.resumeData];
+    if (self.resumeData) {
+        self.task = [self.session downloadTaskWithResumeData:self.resumeData];
         [self configTask];
     } else if (self.task == nil
                || (self.task.state == NSURLSessionTaskStateCompleted && self.model.progress < 1.0)) {
@@ -153,7 +170,6 @@ static NSTimeInterval kTimeoutInterval = 60.0;
     [self.task resume];
     _executing = YES;
     [self didChangeValueForKey:@"isExecuting"];
-    [ZXDataManager zx_upDateDownloadingWithVideo:self.model];
 }
 
 - (NSURLSessionDownloadTask *)downloadTask {
@@ -168,7 +184,6 @@ static NSTimeInterval kTimeoutInterval = 60.0;
     [self didChangeValueForKey:@"isCancelled"];
     
     [self completeOperation];
-    [ZXDataManager zx_removeAtDownloadingWithVideo:self.model];
 }
 
 - (void)completeOperation {
@@ -189,19 +204,19 @@ static NSTimeInterval kTimeoutInterval = 60.0;
     if ([keyPath isEqualToString:@"state"]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([self.task.error code] < 0) {
-                self.model.status = kZXVideoStatusFailed;
+                self.videoStatus = kCKVideoStatusFailed;
                 return ;
             }
             switch (self.task.state) {
                 case NSURLSessionTaskStateSuspended: {
-                    self.model.status = kZXVideoStatusSuspended;
+                    self.videoStatus = kCKVideoStatusSuspended;
                     break;
                 }
                 case NSURLSessionTaskStateCompleted:
                     if (self.model.progress >= 1.0) {
-                        self.model.status = kZXVideoStatusCompleted;
+                        self.videoStatus = kCKVideoStatusCompleted;
                     } else {
-                        self.model.status = kZXVideoStatusSuspended;
+                        self.videoStatus = kCKVideoStatusSuspended;
                     }
                 default:
                     break;
@@ -220,11 +235,11 @@ static const void *videoModelKey = "videoModelKey";
 
 @implementation NSURLSessionTask (VideoModel)
 
-- (void)setZx_videoModel:(CKVideoModel *)zx_videoModel {
+- (void)setZx_videoModel:(id<CKVideoModelProtocol>)zx_videoModel {
     objc_setAssociatedObject(self, videoModelKey, zx_videoModel, OBJC_ASSOCIATION_ASSIGN);
 }
 
-- (CKVideoModel *)zx_videoModel {
+- (id<CKVideoModelProtocol>)zx_videoModel {
     return objc_getAssociatedObject(self, videoModelKey);
 }
 
