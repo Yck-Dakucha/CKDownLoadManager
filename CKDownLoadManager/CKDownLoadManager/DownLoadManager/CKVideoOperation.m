@@ -25,6 +25,7 @@ static NSTimeInterval kTimeoutInterval = 60.0;
 @property (nonatomic, weak) NSURLSession *session;
 @property (nonatomic, strong) NSData *resumeData;
 @property (nonatomic, assign) CKVideoStatus videoStatus;
+@property (nonatomic, assign) CGFloat progress;
 
 @end
 
@@ -138,7 +139,6 @@ static NSTimeInterval kTimeoutInterval = 60.0;
                     NSLog(@"ERROR >>>>> %@",error);
                 }
             }
-
             NSString *pathName = [NSString stringWithFormat:@"Documents/VideoTemp/%@.mp4",[weakSelf.model performSelector:@selector(filename)]];
             NSString *firePath = [NSHomeDirectory() stringByAppendingPathComponent:pathName];
             [resumeData writeToFile:firePath options:NSDataWritingAtomic error:nil];
@@ -162,7 +162,7 @@ static NSTimeInterval kTimeoutInterval = 60.0;
         self.task = [self.session downloadTaskWithResumeData:self.resumeData];
         [self configTask];
     } else if (self.task == nil
-               || (self.task.state == NSURLSessionTaskStateCompleted && self.model.progress < 1.0)) {
+               || (self.task.state == NSURLSessionTaskStateCompleted && self.progress < 1.0)) {
         [self statRequest];
     }
     
@@ -213,7 +213,7 @@ static NSTimeInterval kTimeoutInterval = 60.0;
                     break;
                 }
                 case NSURLSessionTaskStateCompleted:
-                    if (self.model.progress >= 1.0) {
+                    if (self.progress >= 1.0) {
                         self.videoStatus = kCKVideoStatusCompleted;
                     } else {
                         self.videoStatus = kCKVideoStatusSuspended;

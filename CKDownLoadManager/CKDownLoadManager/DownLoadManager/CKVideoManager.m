@@ -8,6 +8,7 @@
 
 #import "CKVideoManager.h"
 #import "CKVideoOperation.h"
+#import "CKVideoModelProtocol.h"
 
 static CKVideoManager *_sg_videoManager = nil;
 
@@ -56,6 +57,7 @@ static CKVideoManager *_sg_videoManager = nil;
 }
 
 - (void)startWithVideoModel:(id<CKVideoModelProtocol>)videoModel {
+    
     if (videoModel.status != kZXVideoStatusCompleted) {
         videoModel.status = kZXVideoStatusRunning;
         if (videoModel.operation == nil) {
