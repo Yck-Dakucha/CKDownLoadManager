@@ -10,12 +10,4 @@
 
 @implementation CKVideoModel
 
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        self.asd = @"asdasd";
-    }
-    return self;
-}
-
 @end

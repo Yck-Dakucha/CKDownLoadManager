@@ -15,7 +15,7 @@ static CKVideoManager *_sg_videoManager = nil;
 @interface CKVideoManager ()<NSURLSessionDownloadDelegate> {
     NSMutableArray *_videoModels;
 }
-
+@property (nonatomic, strong) NSMutableDictionary *operationDic;
 @property (nonatomic, strong) NSOperationQueue *queue;
 @property (nonatomic, strong) NSURLSession *session;
 
@@ -63,61 +63,86 @@ static CKVideoManager *_sg_videoManager = nil;
     }
     if (videoStatus != kCKVideoStatusCompleted) {
         videoStatus = kCKVideoStatusRunning;
-        if (videoModel.operation == nil) {
-            videoModel.operation = [[CKVideoOperation alloc] initWithModel:videoModel
+        if ([videoModel respondsToSelector:@selector(ck_videoStateDidChanged:)]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [videoModel performSelector:@selector(ck_videoStateDidChanged:) withObject:@(videoStatus)];
+            });
+        }
+        CKVideoOperation *tempOperation = [self.operationDic valueForKey:[videoModel performSelector:@selector(videoUrl)]];
+        if (tempOperation == nil) {
+            tempOperation = [[CKVideoOperation alloc] initWithModel:videoModel
                                                                     session:self.session];
-            [self.queue addOperation:videoModel.operation];
-            [videoModel.operation start];
+            [self.queue addOperation:tempOperation];
+            [self.operationDic setObject:tempOperation forKey:[videoModel performSelector:@selector(videoUrl)]];
+            [tempOperation start];
             [_videoModels addObject:videoModel];
-            if (![ZXDataManager zx_searchCourseInDownloading:videoModel]) {
-                [ZXDataManager zx_addToDownloadingWithVideo:videoModel];
-            }
+//            if (![ZXDataManager zx_searchCourseInDownloading:videoModel]) {
+//                [ZXDataManager zx_addToDownloadingWithVideo:videoModel];
+//            }
         } else {
-            [videoModel.operation resume];
+            [tempOperation resume];
         }
     }
 }
 
-- (void)suspendWithVideoModel:(CKVideoModel *)videoModel {
-    if (videoModel.status != kZXVideoStatusCompleted) {
-        if (videoModel.operation == nil) {
-            videoModel.operation = [[ZXVideoOperation alloc] initWithModel:videoModel
-                                                                    session:self.session];
-            [self.queue addOperation:videoModel.operation];
+- (void)suspendWithVideoModel:(id<CKVideoModelProtocol>)videoModel {
+    enum CKVideoStatus videoStatus;
+    if ([videoModel respondsToSelector:@selector(videoStatus)]) {
+        videoStatus = [[videoModel performSelector:@selector(videoStatus)] integerValue];
+    }
+    if (videoStatus != kCKVideoStatusCompleted) {
+        videoStatus = kCKVideoStatusSuspended;
+        if ([videoModel respondsToSelector:@selector(ck_videoStateDidChanged:)]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [videoModel performSelector:@selector(ck_videoStateDidChanged:) withObject:@(videoStatus)];
+            });
         }
-        [videoModel.operation suspend];
+        CKVideoOperation *tempOperation = [self.operationDic valueForKey:[videoModel performSelector:@selector(videoUrl)]];
+        if (tempOperation == nil) {
+            tempOperation = [[CKVideoOperation alloc] initWithModel:videoModel
+                                                            session:self.session];
+            [self.queue addOperation:tempOperation];
+            [self.operationDic setObject:tempOperation forKey:[videoModel performSelector:@selector(videoUrl)]];
+        }
+        [tempOperation suspend];
     }
 }
 
 - (void)suspendAllVideoModel {
-    for (CKVideoModel *model in self.videoModels) {
+    for (id<CKVideoModelProtocol> videoModel in self.videoModels) {
         @autoreleasepool {
-            model.status = kZXVideoStatusSuspended;
-            [model.operation suspend];
+            [self suspendWithVideoModel:videoModel];
         }
     }
 }
 
-- (void)resumeWithVideoModel:(CKVideoModel *)videoModel {
-    if (videoModel.status != kZXVideoStatusCompleted) {
-        if (videoModel.operation == nil) {
-            videoModel.operation = [[ZXVideoOperation alloc] initWithModel:videoModel
-                                                                    session:self.session];
-            [self.queue addOperation:videoModel.operation];
-           
+- (void)resumeWithVideoModel:(id<CKVideoModelProtocol>)videoModel {
+    enum CKVideoStatus videoStatus;
+    if ([videoModel respondsToSelector:@selector(videoStatus)]) {
+        videoStatus = [[videoModel performSelector:@selector(videoStatus)] integerValue];
+    }
+    if (videoStatus != kCKVideoStatusCompleted) {
+        videoStatus = kCKVideoStatusRunning;
+        if ([videoModel respondsToSelector:@selector(ck_videoStateDidChanged:)]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [videoModel performSelector:@selector(ck_videoStateDidChanged:) withObject:@(videoStatus)];
+            });
         }
-        [videoModel.operation resume];
+        CKVideoOperation *tempOperation = [self.operationDic valueForKey:[videoModel performSelector:@selector(videoUrl)]];
+        if (tempOperation == nil) {
+            tempOperation = [[CKVideoOperation alloc] initWithModel:videoModel
+                                                            session:self.session];
+            [self.queue addOperation:tempOperation];
+            [self.operationDic setObject:tempOperation forKey:[videoModel performSelector:@selector(videoUrl)]];
+        }
+        [tempOperation resume];
     }
 }
 
-- (void)stopWiethVideoModel:(CKVideoModel *)videoModel {
-    if (videoModel.operation) {
-        if (videoModel.operation == nil) {
-            videoModel.operation = [[ZXVideoOperation alloc] initWithModel:videoModel
-                                                                    session:self.session];
-            [self.queue addOperation:videoModel.operation];
-        }
-        [videoModel.operation cancel];
+- (void)stopWiethVideoModel:(id<CKVideoModelProtocol>)videoModel {
+    CKVideoOperation *tempOperation = [self.operationDic valueForKey:[videoModel performSelector:@selector(videoUrl)]];
+    if (tempOperation) {
+        [tempOperation cancel];
     }
 }
 
@@ -130,10 +155,11 @@ didFinishDownloadingToURL:(NSURL *)location {
     if (downloadTask.zx_videoModel.localPath) {
         NSURL *toURL = [NSURL fileURLWithPath:downloadTask.zx_videoModel.localPath isDirectory:NO];
         NSFileManager *manager = [NSFileManager defaultManager];
-        BOOL existed = [manager fileExistsAtPath:kVideoPath];
+        NSString *videoPath = [downloadTask.zx_videoModel performSelector:@selector(videoPath)];
+        BOOL existed = [manager fileExistsAtPath:videoPath];
         if (!existed) {
             NSError *error;
-            [manager createDirectoryAtPath:kVideoPath withIntermediateDirectories:YES attributes:nil error:&error];
+            [manager createDirectoryAtPath:videoPath withIntermediateDirectories:YES attributes:nil error:&error];
             if (error) {
                 NSLog(@"ERROR >>>>> %@",error);
             }
@@ -144,7 +170,9 @@ didFinishDownloadingToURL:(NSURL *)location {
             NSLog(@"ERROR >>>>> %@",error);
         }
     }
-    [downloadTask.zx_videoModel.operation downloadFinished];
+    NSString *key = [downloadTask.zx_videoModel performSelector:@selector(videoUrl)];
+    CKVideoOperation *operation = self.operationDic[key];
+    [operation downloadFinished];
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
@@ -152,8 +180,6 @@ didFinishDownloadingToURL:(NSURL *)location {
         if (error == nil) {
             task.zx_videoModel.status = kZXVideoStatusCompleted;
             [task.zx_videoModel.operation downloadFinished];
-            [ZXDataManager zx_removeAtDownloadingWithVideo:task.zx_videoModel];
-            [ZXDataManager zx_addToDownloadedWithVideo:task.zx_videoModel];
             [_videoModels removeObject:task.zx_videoModel];
             
             NSFileManager *manager = [NSFileManager defaultManager];

@@ -54,7 +54,7 @@ typedef NS_ENUM(NSInteger, CKVideoStatus) {
  *
  *  @param state 对象状态
  */
-- (void)videoStateDidChanged:(CKVideoStatus)state;
+- (void)ck_videoStateDidChanged:(CKVideoStatus)state;
 /**
  *  下载进度发生变化
  *
@@ -62,7 +62,7 @@ typedef NS_ENUM(NSInteger, CKVideoStatus) {
  *  @param vodeoDownLoadSize 已下载大小
  *  @param videoSize         目标总大小
  */
-- (void)videoProgressDidChanged:(CGFloat)progress
+- (void)ck_videoProgressDidChanged:(CGFloat)progress
               videoDownLoadSize:(long long)vodeoDownLoadSize
                       videoSize:(long long)videoSize;
 /**
@@ -70,6 +70,6 @@ typedef NS_ENUM(NSInteger, CKVideoStatus) {
  *
  *  @param videoDownloadSpeed 网速
  */
-- (void)videoSpeedDidChanged:(int)videoDownloadSpeed;
+- (void)ck_videoSpeedDidChanged:(int)videoDownloadSpeed;
 
 @end

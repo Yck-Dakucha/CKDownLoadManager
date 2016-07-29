@@ -42,9 +42,9 @@ static NSTimeInterval kTimeoutInterval = 60.0;
 
 - (void)setVideoStatus:(CKVideoStatus)videoStatus {
     _videoStatus = videoStatus;
-    if ([self.model respondsToSelector:@selector(videoStateDidChanged:)]) {
+    if ([self.model respondsToSelector:@selector(ck_videoStateDidChanged:)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.model performSelector:@selector(videoStateDidChanged:) withObject:@(_videoStatus)];
+            [self.model performSelector:@selector(ck_videoStateDidChanged:) withObject:@(_videoStatus)];
         });
     }
 }
