@@ -57,9 +57,12 @@ static CKVideoManager *_sg_videoManager = nil;
 }
 
 - (void)startWithVideoModel:(id<CKVideoModelProtocol>)videoModel {
-    
-    if (videoModel.status != kZXVideoStatusCompleted) {
-        videoModel.status = kZXVideoStatusRunning;
+    enum CKVideoStatus videoStatus;
+    if ([videoModel respondsToSelector:@selector(videoStatus)]) {
+        videoStatus = [[videoModel performSelector:@selector(videoStatus)] integerValue];
+    }
+    if (videoStatus != kCKVideoStatusCompleted) {
+        videoStatus = kCKVideoStatusRunning;
         if (videoModel.operation == nil) {
             videoModel.operation = [[CKVideoOperation alloc] initWithModel:videoModel
                                                                     session:self.session];

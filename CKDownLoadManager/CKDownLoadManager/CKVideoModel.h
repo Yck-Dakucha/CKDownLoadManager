@@ -16,7 +16,7 @@
 typedef void(^CKVideoStatusChanged)(CKVideoModel *model);
 typedef void(^CKVideoProgressChanged)(CKVideoModel *model);
 
-@interface CKVideoModel : NSObject
+@interface CKVideoModel : NSObject<CKVideoModelProtocol>
 
 @property (nonatomic, copy) NSString *videoId;
 @property (nonatomic, copy) NSString *videoUrl;

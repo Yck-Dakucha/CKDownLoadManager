@@ -22,10 +22,10 @@ static NSTimeInterval kTimeoutInterval = 60.0;
 }
 
 @property (nonatomic, strong) NSURLSessionDownloadTask *task;
-@property (nonatomic, weak) NSURLSession *session;
-@property (nonatomic, strong) NSData *resumeData;
-@property (nonatomic, assign) CKVideoStatus videoStatus;
-@property (nonatomic, assign) CGFloat progress;
+@property (nonatomic, weak  ) NSURLSession             *session;
+@property (nonatomic, strong) NSData                   *resumeData;
+@property (nonatomic, assign) CKVideoStatus            videoStatus;
+@property (nonatomic, assign) CGFloat                  progress;
 
 @end
 
