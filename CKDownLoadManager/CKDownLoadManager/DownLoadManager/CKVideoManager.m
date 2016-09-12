@@ -76,9 +76,6 @@ static CKVideoManager *_sg_videoManager = nil;
             [self.operationDic setObject:tempOperation forKey:[videoModel performSelector:@selector(videoUrl)]];
             [tempOperation start];
             [_videoModels addObject:videoModel];
-//            if (![ZXDataManager zx_searchCourseInDownloading:videoModel]) {
-//                [ZXDataManager zx_addToDownloadingWithVideo:videoModel];
-//            }
         } else {
             [tempOperation resume];
         }
@@ -195,7 +192,6 @@ didFinishDownloadingToURL:(NSURL *)location {
         } else if ([error code] < 0) {
             // 网络异常
             task.zx_videoModel.status = kZXVideoStatusFailed;
-            [ZXDataManager zx_upDateDownloadingWithVideo:task.zx_videoModel];
         }else if (task.zx_videoModel.status == kZXVideoStatusSuspended) {
             task.zx_videoModel.status = kZXVideoStatusSuspended;
         }
@@ -213,6 +209,9 @@ totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
     CGFloat progress = totalBytesWritten / (CGFloat)totalBytesExpectedToWrite;
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        if ([downloadTask.zx_videoModel respondsToSelector:@selector(ck_videoProgressDidChanged:videoDownLoadSize:videoSize:)]) {
+            [downloadTask.zx_videoModel performSelector:@selector(ck_videoProgressDidChanged:videoDownLoadSize:videoSize:) withObject:progress withObject:<#(id)#>]
+        }
         downloadTask.zx_videoModel.progressText = text;
         downloadTask.zx_videoModel.progress = progress;
     });
