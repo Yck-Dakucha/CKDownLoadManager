@@ -57,23 +57,14 @@ static CKVideoManager *_sg_videoManager = nil;
 }
 
 - (void)startWithVideoModel:(id<CKVideoModelProtocol>)videoModel {
-    enum CKVideoStatus videoStatus;
-    if ([videoModel respondsToSelector:@selector(videoStatus)]) {
-        videoStatus = [[videoModel performSelector:@selector(videoStatus)] integerValue];
-    }
-    if (videoStatus != kCKVideoStatusCompleted) {
-        videoStatus = kCKVideoStatusRunning;
-        if ([videoModel respondsToSelector:@selector(ck_videoStateDidChanged:)]) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [videoModel performSelector:@selector(ck_videoStateDidChanged:) withObject:@(videoStatus)];
-            });
-        }
-        CKVideoOperation *tempOperation = [self.operationDic valueForKey:[videoModel performSelector:@selector(videoUrl)]];
+    if (videoModel.videoStatus != kCKVideoStatusCompleted) {
+        videoModel.videoStatus = kCKVideoStatusRunning;
+        CKVideoOperation *tempOperation = [self.operationDic valueForKey:videoModel.videoUrl];
         if (tempOperation == nil) {
             tempOperation = [[CKVideoOperation alloc] initWithModel:videoModel
                                                                     session:self.session];
             [self.queue addOperation:tempOperation];
-            [self.operationDic setObject:tempOperation forKey:[videoModel performSelector:@selector(videoUrl)]];
+            [self.operationDic setObject:tempOperation forKey:videoModel.videoUrl];
             [tempOperation start];
             [_videoModels addObject:videoModel];
 //            if (![ZXDataManager zx_searchCourseInDownloading:videoModel]) {
@@ -86,23 +77,14 @@ static CKVideoManager *_sg_videoManager = nil;
 }
 
 - (void)suspendWithVideoModel:(id<CKVideoModelProtocol>)videoModel {
-    enum CKVideoStatus videoStatus;
-    if ([videoModel respondsToSelector:@selector(videoStatus)]) {
-        videoStatus = [[videoModel performSelector:@selector(videoStatus)] integerValue];
-    }
-    if (videoStatus != kCKVideoStatusCompleted) {
-        videoStatus = kCKVideoStatusSuspended;
-        if ([videoModel respondsToSelector:@selector(ck_videoStateDidChanged:)]) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [videoModel performSelector:@selector(ck_videoStateDidChanged:) withObject:@(videoStatus)];
-            });
-        }
-        CKVideoOperation *tempOperation = [self.operationDic valueForKey:[videoModel performSelector:@selector(videoUrl)]];
+    if (videoModel.videoStatus != kCKVideoStatusCompleted) {
+        videoModel.videoStatus = kCKVideoStatusSuspended;
+        CKVideoOperation *tempOperation = [self.operationDic valueForKey:videoModel.videoUrl];
         if (tempOperation == nil) {
             tempOperation = [[CKVideoOperation alloc] initWithModel:videoModel
                                                             session:self.session];
             [self.queue addOperation:tempOperation];
-            [self.operationDic setObject:tempOperation forKey:[videoModel performSelector:@selector(videoUrl)]];
+            [self.operationDic setObject:tempOperation forKey:videoModel.videoUrl];
         }
         [tempOperation suspend];
     }
@@ -117,30 +99,21 @@ static CKVideoManager *_sg_videoManager = nil;
 }
 
 - (void)resumeWithVideoModel:(id<CKVideoModelProtocol>)videoModel {
-    enum CKVideoStatus videoStatus;
-    if ([videoModel respondsToSelector:@selector(videoStatus)]) {
-        videoStatus = [[videoModel performSelector:@selector(videoStatus)] integerValue];
-    }
-    if (videoStatus != kCKVideoStatusCompleted) {
-        videoStatus = kCKVideoStatusRunning;
-        if ([videoModel respondsToSelector:@selector(ck_videoStateDidChanged:)]) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [videoModel performSelector:@selector(ck_videoStateDidChanged:) withObject:@(videoStatus)];
-            });
-        }
-        CKVideoOperation *tempOperation = [self.operationDic valueForKey:[videoModel performSelector:@selector(videoUrl)]];
+    if (videoModel.videoStatus != kCKVideoStatusCompleted) {
+        videoModel.videoStatus = kCKVideoStatusRunning;
+        CKVideoOperation *tempOperation = [self.operationDic valueForKey:videoModel.videoUrl];
         if (tempOperation == nil) {
             tempOperation = [[CKVideoOperation alloc] initWithModel:videoModel
                                                             session:self.session];
             [self.queue addOperation:tempOperation];
-            [self.operationDic setObject:tempOperation forKey:[videoModel performSelector:@selector(videoUrl)]];
+            [self.operationDic setObject:tempOperation forKey:videoModel.videoUrl];
         }
         [tempOperation resume];
     }
 }
 
 - (void)stopWiethVideoModel:(id<CKVideoModelProtocol>)videoModel {
-    CKVideoOperation *tempOperation = [self.operationDic valueForKey:[videoModel performSelector:@selector(videoUrl)]];
+    CKVideoOperation *tempOperation = [self.operationDic valueForKey:videoModel.videoUrl];
     if (tempOperation) {
         [tempOperation cancel];
     }
@@ -153,13 +126,14 @@ didFinishDownloadingToURL:(NSURL *)location {
     
     //本地的文件路径，使用fileURLWithPath:来创建
     if (downloadTask.zx_videoModel.localPath) {
-        NSURL *toURL = [NSURL fileURLWithPath:downloadTask.zx_videoModel.localPath isDirectory:NO];
+        NSString *filePath = [downloadTask.zx_videoModel.localPath stringByAppendingPathComponent:downloadTask.zx_videoModel.fileName];
+        NSURL *toURL = [NSURL fileURLWithPath:filePath isDirectory:NO];
         NSFileManager *manager = [NSFileManager defaultManager];
-        NSString *videoPath = [downloadTask.zx_videoModel performSelector:@selector(videoPath)];
+        NSString *videoPath = downloadTask.zx_videoModel.localPath;
         BOOL existed = [manager fileExistsAtPath:videoPath];
         if (!existed) {
             NSError *error;
-            [manager createDirectoryAtPath:videoPath withIntermediateDirectories:YES attributes:nil error:&error];
+            [manager createDirectoryAtPath:videoPath withIntermediateDirectories:NO attributes:nil error:&error];
             if (error) {
                 NSLog(@"ERROR >>>>> %@",error);
             }
@@ -170,7 +144,7 @@ didFinishDownloadingToURL:(NSURL *)location {
             NSLog(@"ERROR >>>>> %@",error);
         }
     }
-    NSString *key = [downloadTask.zx_videoModel performSelector:@selector(videoUrl)];
+    NSString *key = downloadTask.zx_videoModel.videoUrl;
     CKVideoOperation *operation = self.operationDic[key];
     [operation downloadFinished];
 }
@@ -178,12 +152,12 @@ didFinishDownloadingToURL:(NSURL *)location {
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
     dispatch_async(dispatch_get_main_queue(), ^{
         if (error == nil) {
-            task.zx_videoModel.status = kZXVideoStatusCompleted;
-            [task.zx_videoModel.operation downloadFinished];
-            [_videoModels removeObject:task.zx_videoModel];
-            
+            CKVideoOperation *operation = [self.operationDic objectForKey:task.zx_videoModel.videoUrl];
+            NSLog(@"%@",task.zx_videoModel.fileName);
+            [operation downloadFinished];
+            NSLog(@"%@",task.zx_videoModel.fileName);
             NSFileManager *manager = [NSFileManager defaultManager];
-            NSString *pathName = [NSString stringWithFormat:@"Documents/VideoTemp/%@.mp4",task.zx_videoModel.fileName];
+            NSString *pathName = [NSString stringWithFormat:@"Documents/VideoTemp/%@",task.zx_videoModel.fileName];
             NSString *filePath = [NSHomeDirectory() stringByAppendingPathComponent:pathName];
             if ([manager fileExistsAtPath:filePath]) {
                 NSError *error;
@@ -192,12 +166,13 @@ didFinishDownloadingToURL:(NSURL *)location {
                     NSLog(@"删除缓存错误 >>> %@",error);
                 }
             }
+            task.zx_videoModel.videoStatus = kCKVideoStatusCompleted;
+            [_videoModels removeObject:task.zx_videoModel];
         } else if ([error code] < 0) {
             // 网络异常
-            task.zx_videoModel.status = kZXVideoStatusFailed;
-            [ZXDataManager zx_upDateDownloadingWithVideo:task.zx_videoModel];
-        }else if (task.zx_videoModel.status == kZXVideoStatusSuspended) {
-            task.zx_videoModel.status = kZXVideoStatusSuspended;
+            task.zx_videoModel.videoStatus = kCKVideoStatusFailed;
+        }else if (task.zx_videoModel.videoStatus == kCKVideoStatusSuspended) {
+            task.zx_videoModel.videoStatus = kCKVideoStatusSuspended;
         }
     });
 }
@@ -213,8 +188,19 @@ totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
     CGFloat progress = totalBytesWritten / (CGFloat)totalBytesExpectedToWrite;
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        downloadTask.zx_videoModel.progressText = text;
-        downloadTask.zx_videoModel.progress = progress;
+        if ([downloadTask.zx_videoModel respondsToSelector:@selector(setProgressText:)]) {
+             downloadTask.zx_videoModel.progressText = text;
+        }
+        if ([downloadTask.zx_videoModel respondsToSelector:@selector(setProgress:)]) {
+            downloadTask.zx_videoModel.progress = progress;
+        }
+        if ([downloadTask.zx_videoModel respondsToSelector:@selector(setTotalBytesWritten:)]) {
+            downloadTask.zx_videoModel.totalBytesWritten = totalBytesWritten;
+        }
+        if ([downloadTask.zx_videoModel respondsToSelector:@selector(setTotalBytesExpectedToWrite:)]) {
+            downloadTask.zx_videoModel.totalBytesExpectedToWrite = totalBytesExpectedToWrite;
+        }
+
     });
 }
 
@@ -228,10 +214,19 @@ expectedTotalBytes:(int64_t)expectedTotalBytes {
     CGFloat progress = fileOffset / (CGFloat)expectedTotalBytes;
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        downloadTask.zx_videoModel.progressText = text;
-        downloadTask.zx_videoModel.progress = progress;
+        if ([downloadTask.zx_videoModel respondsToSelector:@selector(setProgressText:)]) {
+            downloadTask.zx_videoModel.progressText = text;
+        }
+        if ([downloadTask.zx_videoModel respondsToSelector:@selector(setProgress:)]) {
+            downloadTask.zx_videoModel.progress = progress;
+        }
+        if ([downloadTask.zx_videoModel respondsToSelector:@selector(setTotalBytesWritten:)]) {
+            downloadTask.zx_videoModel.totalBytesWritten = fileOffset;
+        }
+        if ([downloadTask.zx_videoModel respondsToSelector:@selector(setTotalBytesExpectedToWrite:)]) {
+            downloadTask.zx_videoModel.totalBytesExpectedToWrite = expectedTotalBytes;
+        }
     });
 }
-
 
 @end

@@ -10,31 +10,58 @@
 #import <UIKit/UIKit.h>
 #import "CKVideoModelProtocol.h"
 
-@class CKVideoModel;
-
-
-typedef void(^CKVideoStatusChanged)(CKVideoModel *model);
-typedef void(^CKVideoProgressChanged)(CKVideoModel *model);
-
 @interface CKVideoModel : NSObject<CKVideoModelProtocol>
 
-@property (nonatomic, copy) NSString *videoId;
-@property (nonatomic, copy) NSString *videoUrl;
 @property (nonatomic, copy) NSString *imageUrl;
 @property (nonatomic, copy) NSString *title;
 
-@property (nonatomic, strong        ) NSString               *fileName;
-//记录断点下载
-@property (nonatomic, strong        ) NSData                 *resumeData;
-@property (nonatomic, strong        ) NSString               *resumePath;
-// 下载后存储到此处
-@property (nonatomic, copy          ) NSString               *localPath;
-@property (nonatomic, copy          ) NSString               *progressText;
-@property (nonatomic, assign        ) CGFloat                progress;
-@property (nonatomic, assign        ) CKVideoStatus          status;
-@property (nonatomic, readonly, copy) NSString               *statusText;
-//@property (nonatomic, strong) CKVideoOperation *operation;
-@property (nonatomic, copy          ) CKVideoStatusChanged   onStatusChanged;
-@property (nonatomic, copy          ) CKVideoProgressChanged onProgressChanged;
+/**
+ 文件保存名
+ */
+@property (nonatomic, copy) NSString *fileName;
+/**
+ *  下载对象下载地址
+ *
+ *  @return
+ */
+@property (nonatomic, copy) NSString *videoUrl;
+/**
+ *  缓存位置
+ *
+ *  @return
+ */
+@property (nonatomic, copy) NSString *resumePath;
+/**
+ *  本地下载对象存储位置
+ *
+ *  @return
+ */
+@property (nonatomic, copy) NSString *localPath;
+/**
+ *  下载对象当前状态
+ *
+ *  @return
+ */
+@property (nonatomic, assign) CKVideoStatus videoStatus;
+
+/**
+ 下载进度
+ */
+@property (nonatomic, assign) CGFloat progress;
+/**
+ 下载进度 0.0M/10.0M
+ */
+@property (nonatomic, copy) NSString *progressText;
+
+/**
+ 下载状态变化的回调
+ */
+@property (nonatomic, copy) CKVideoStatusChanged videoStatusChanged;
+/**
+ 下载进度变化的回调
+ */
+@property (nonatomic, copy) CKVideoProgressChanged videoProgressChanged;
+
+
 
 @end

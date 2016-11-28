@@ -24,7 +24,7 @@ static NSTimeInterval kTimeoutInterval = 60.0;
 @property (nonatomic, strong) NSURLSessionDownloadTask *task;
 @property (nonatomic, weak  ) NSURLSession             *session;
 @property (nonatomic, strong) NSData                   *resumeData;
-@property (nonatomic, assign) CKVideoStatus            videoStatus;
+//@property (nonatomic, assign) CKVideoStatus            videoStatus;
 @property (nonatomic, assign) CGFloat                  progress;
 
 @end
@@ -32,7 +32,7 @@ static NSTimeInterval kTimeoutInterval = 60.0;
 @implementation CKVideoOperation
 
 - (NSData *)resumeData {
-    NSData *data = [NSData dataWithContentsOfFile:[self.model performSelector:@selector(resumePath)]];
+    NSData *data = [NSData dataWithContentsOfFile:self.model.resumePath];
     if (data.bytes) {
         return data;
     }else {
@@ -40,23 +40,46 @@ static NSTimeInterval kTimeoutInterval = 60.0;
     }
 }
 
-- (void)setVideoStatus:(CKVideoStatus)videoStatus {
-    _videoStatus = videoStatus;
-    if ([self.model respondsToSelector:@selector(ck_videoStateDidChanged:)]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.model performSelector:@selector(ck_videoStateDidChanged:) withObject:@(_videoStatus)];
-        });
-    }
-}
-
+IMP originStatusIMP;
+IMP originProgressIMP;
 - (instancetype)initWithModel:(id<CKVideoModelProtocol>)model session:(NSURLSession *)session {
     if (self == [super init]) {
         _model = model;
         _session = session;
-        _videoStatus = (CKVideoStatus)[self.model performSelector:@selector(videoStatus)];
+        if (!originStatusIMP) {
+            SEL oriSetStatus = @selector(setVideoStatus:);
+            originStatusIMP = [[model class] instanceMethodForSelector:oriSetStatus];
+            class_replaceMethod([model class],  @selector(setVideoStatus:), (IMP)runTimeStatusChangeMethod, NULL);
+        }
+        if (!originProgressIMP) {
+            SEL oriSetProgress = @selector(setProgress:);
+            originProgressIMP = [[model class] instanceMethodForSelector:oriSetProgress];
+            class_replaceMethod([model class], oriSetProgress, (IMP)runTimeProgressChangeMethod, NULL);
+        }
+        
         [self statRequest];
     }
     return self;
+}   
+
+void runTimeStatusChangeMethod(id self,SEL _cmd,int videoStatus) {
+    originStatusIMP(self,_cmd,videoStatus);
+    if ([self respondsToSelector:@selector(setVideoStatusChanged:)]) {
+        void(^callBack)(id<CKVideoModelProtocol>,int status) = [self performSelector:@selector(videoStatusChanged)];
+        if (callBack) {
+            callBack(self,videoStatus);
+        }
+    }
+}
+
+void runTimeProgressChangeMethod(id self,SEL _cmd,CGFloat progress) {
+    originProgressIMP(self,_cmd,progress);
+    if ([self respondsToSelector:@selector(setVideoProgressChanged:)]) {
+        void(^callBack)(id<CKVideoModelProtocol>,CGFloat progress) = [self performSelector:@selector(videoProgressChanged)];
+        if (callBack) {
+            callBack(self,progress);
+        }
+    }
 }
 
 - (void)dealloc {
@@ -103,7 +126,7 @@ static NSTimeInterval kTimeoutInterval = 60.0;
         [self resume];
     } else {
         [self.task resume];
-        self.videoStatus = kCKVideoStatusRunning;
+        self.model.videoStatus = kCKVideoStatusRunning;
     }
     _executing = YES;
     [self didChangeValueForKey:@"isExecuting"];
@@ -130,33 +153,33 @@ static NSTimeInterval kTimeoutInterval = 60.0;
         
         [self.task cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
             NSFileManager *manager = [NSFileManager defaultManager];
-            NSString *kVideoTempPath = [self.model performSelector:@selector(resumePath)];
+            NSString *kVideoTempPath = self.model.resumePath;
             BOOL existed = [manager fileExistsAtPath:kVideoTempPath];
             if (!existed) {
                 NSError *error;
-                [manager createDirectoryAtPath:kVideoTempPath withIntermediateDirectories:YES attributes:nil error:&error];
+                [manager createDirectoryAtPath:kVideoTempPath withIntermediateDirectories:NO attributes:nil error:&error];
                 if (error) {
                     NSLog(@"ERROR >>>>> %@",error);
                 }
             }
-            NSString *pathName = [NSString stringWithFormat:@"Documents/VideoTemp/%@.mp4",[weakSelf.model performSelector:@selector(filename)]];
+            NSString *pathName = [NSString stringWithFormat:@"Documents/VideoTemp/%@",weakSelf.model.fileName];
             NSString *firePath = [NSHomeDirectory() stringByAppendingPathComponent:pathName];
             [resumeData writeToFile:firePath options:NSDataWritingAtomic error:nil];
 
             weakTask = nil;
             isExecuting = NO;
             [weakSelf didChangeValueForKey:@"isExecuting"];
-            weakSelf.videoStatus = kCKVideoStatusSuspended;
+            weakSelf.model.videoStatus = kCKVideoStatusSuspended;
         }];
         [self.task suspend];
     }
 }
 
 - (void)resume {
-    if (self.videoStatus == kCKVideoStatusCompleted) {
+    if (self.model.videoStatus == kCKVideoStatusCompleted) {
         return;
     }
-    self.videoStatus = kCKVideoStatusRunning;
+    self.model.videoStatus = kCKVideoStatusRunning;
     
     if (self.resumeData) {
         self.task = [self.session downloadTaskWithResumeData:self.resumeData];
@@ -204,19 +227,19 @@ static NSTimeInterval kTimeoutInterval = 60.0;
     if ([keyPath isEqualToString:@"state"]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([self.task.error code] < 0) {
-                self.videoStatus = kCKVideoStatusFailed;
+                self.model.videoStatus = kCKVideoStatusFailed;
                 return ;
             }
             switch (self.task.state) {
                 case NSURLSessionTaskStateSuspended: {
-                    self.videoStatus = kCKVideoStatusSuspended;
+                    self.model.videoStatus = kCKVideoStatusSuspended;
                     break;
                 }
                 case NSURLSessionTaskStateCompleted:
                     if (self.progress >= 1.0) {
-                        self.videoStatus = kCKVideoStatusCompleted;
+                        self.model.videoStatus = kCKVideoStatusCompleted;
                     } else {
-                        self.videoStatus = kCKVideoStatusSuspended;
+                        self.model.videoStatus = kCKVideoStatusSuspended;
                     }
                 default:
                     break;

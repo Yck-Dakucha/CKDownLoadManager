@@ -18,58 +18,94 @@ typedef NS_ENUM(NSInteger, CKVideoStatus) {
     kCKVideoStatusWaiting = 5    // 等待下载
 };
 
+
 @protocol CKVideoModelProtocol <NSObject>
+
+typedef void(^CKVideoStatusChanged)(id<CKVideoModelProtocol>,CKVideoStatus videoStatus);
+typedef void(^CKVideoProgressChanged)(id<CKVideoModelProtocol>,CGFloat progress);
 
 @required
 
 /**
- *  下载对象获取地址
+ 文件保存名
+ */
+@property (nonatomic, copy) NSString *fileName;
+/**
+ *  下载对象下载地址
  *
  *  @return
  */
-- (NSString *)videoUrl;
+@property (nonatomic, copy) NSString *videoUrl;
 /**
  *  缓存位置
  *
  *  @return
  */
-- (NSString *)resumePath;
+@property (nonatomic, copy) NSString *resumePath;
 /**
  *  本地下载对象存储位置
  *
  *  @return
  */
-- (NSString *)localPath;
+@property (nonatomic, copy) NSString *localPath;
 /**
  *  下载对象当前状态
  *
  *  @return
  */
-- (CKVideoStatus)videoStatus;
+@property (nonatomic, assign) CKVideoStatus videoStatus;
 
 @optional
 
 /**
- *  下载对象状态发生变化回调
- *
- *  @param state 对象状态
+ 下载进度
  */
-- (void)ck_videoStateDidChanged:(CKVideoStatus)state;
+@property (nonatomic, assign) CGFloat progress;
 /**
- *  下载进度发生变化
- *
- *  @param progress          进度百分比
- *  @param vodeoDownLoadSize 已下载大小
- *  @param videoSize         目标总大小
+ 下载进度 0.0M/10.0M
  */
-- (void)ck_videoProgressDidChanged:(CGFloat)progress
-              videoDownLoadSize:(long long)vodeoDownLoadSize
-                      videoSize:(long long)videoSize;
+@property (nonatomic, copy) NSString *progressText;
 /**
- *  网速变化回调
- *
- *  @param videoDownloadSpeed 网速
+ 当前下载量  单位Bytes
  */
-- (void)ck_videoSpeedDidChanged:(int)videoDownloadSpeed;
+@property (nonatomic, assign) int64_t totalBytesWritten;
+/**
+ 文件大小 单位Bytes
+ */
+@property (nonatomic, assign) int64_t totalBytesExpectedToWrite;
+
+/**
+ 下载状态变化的回调
+ */
+@property (nonatomic, copy) CKVideoStatusChanged videoStatusChanged;
+
+/**
+ 下载进度变化的回调
+ */
+@property (nonatomic, copy) CKVideoProgressChanged videoProgressChanged;
+
+
+///**
+// *  下载对象状态发生变化回调
+// *
+// *  @param state 对象状态
+// */
+//- (void)ck_videoStateDidChanged:(CKVideoStatus)state;
+///**
+// *  下载进度发生变化
+// *
+// *  @param progress          进度百分比
+// *  @param vodeoDownLoadSize 已下载大小
+// *  @param videoSize         目标总大小
+// */
+//- (void)ck_videoProgressDidChanged:(CGFloat)progress
+//              videoDownLoadSize:(long long)vodeoDownLoadSize
+//                      videoSize:(long long)videoSize;
+///**
+// *  网速变化回调
+// *
+// *  @param videoDownloadSpeed 网速
+// */
+//- (void)ck_videoSpeedDidChanged:(int)videoDownloadSpeed;
 
 @end

@@ -15,7 +15,6 @@
 @interface ViewController ()<UITableViewDelegate,UITableViewDataSource>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-@property (nonatomic, strong) NSArray *dataArray;
 
 @end
 
@@ -30,15 +29,16 @@
     NSMutableArray *videoModels = [[NSMutableArray alloc] init];
     for (NSString *uid in urls) {
         CKVideoModel *model = [[CKVideoModel alloc] init];
-        model.videoUrl = [NSString stringWithFormat:@"%@/pages/mnks23/voide/1/course2/%@.MP4",
-                          kBaseURL, uid];
-        model.imageUrl = [NSString stringWithFormat:@"%@/pages/mnks23/imageurl/1/course2/%@.jpg",
-                          kBaseURL, uid];
-        model.videoId = uid;
+        model.fileName = [NSString stringWithFormat:@"%@.pdf",uid];
+        model.videoUrl = @"http://192.168.3.125/test.pdf";
+        model.localPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+        model.resumePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/VideoTemp"];
         model.title = [NSString stringWithFormat:@"测试下载视频标题：%@", uid];
         [videoModels addObject:model];
     }
     [[CKVideoManager shared] addVideoModels:videoModels];
+    [self.tableView reloadData];
+    self.tableView.tableFooterView = [[UIView alloc] init];
 
 }
 
@@ -56,15 +56,28 @@
     static NSString *identifier = @"cellIdentifier";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:identifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:identifier];
     }
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    CKVideoModel *model = self.dataArray[indexPath.row];
+    CKVideoModel *model = [CKVideoManager shared].videoModels[indexPath.row];
     cell.textLabel.text = model.title;
-    cell.detailTextLabel.text = [NSString ]
+    cell.detailTextLabel.text = model.progressText;
+    model.videoStatusChanged = ^(CKVideoModel *videomodel,CKVideoStatus videoStatus){
+        NSLog(@"status >>>>  %ld",(long)videoStatus);
+    };
+    model.videoProgressChanged = ^(CKVideoModel *videomodel,CGFloat progress) {
+        NSInteger index = [[CKVideoManager shared].videoModels indexOfObject:videomodel];
+        UITableViewCell *downLoadCell = [tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
+        downLoadCell.detailTextLabel.text = videomodel.progressText;
+    };
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    CKVideoModel *model = [CKVideoManager shared].videoModels[indexPath.row];
+    [[CKVideoManager shared] startWithVideoModel:model];
 }
 
 
