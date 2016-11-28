@@ -67,9 +67,6 @@ static CKVideoManager *_sg_videoManager = nil;
             [self.operationDic setObject:tempOperation forKey:videoModel.videoUrl];
             [tempOperation start];
             [_videoModels addObject:videoModel];
-//            if (![ZXDataManager zx_searchCourseInDownloading:videoModel]) {
-//                [ZXDataManager zx_addToDownloadingWithVideo:videoModel];
-//            }
         } else {
             [tempOperation resume];
         }
@@ -153,11 +150,9 @@ didFinishDownloadingToURL:(NSURL *)location {
     dispatch_async(dispatch_get_main_queue(), ^{
         if (error == nil) {
             CKVideoOperation *operation = [self.operationDic objectForKey:task.zx_videoModel.videoUrl];
-            NSLog(@"%@",task.zx_videoModel.fileName);
             [operation downloadFinished];
-            NSLog(@"%@",task.zx_videoModel.fileName);
             NSFileManager *manager = [NSFileManager defaultManager];
-            NSString *pathName = [NSString stringWithFormat:@"Documents/VideoTemp/%@",task.zx_videoModel.fileName];
+            NSString *pathName = [task.zx_videoModel.resumePath stringByAppendingPathComponent:task.zx_videoModel.fileName];
             NSString *filePath = [NSHomeDirectory() stringByAppendingPathComponent:pathName];
             if ([manager fileExistsAtPath:filePath]) {
                 NSError *error;
@@ -200,7 +195,6 @@ totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
         if ([downloadTask.zx_videoModel respondsToSelector:@selector(setTotalBytesExpectedToWrite:)]) {
             downloadTask.zx_videoModel.totalBytesExpectedToWrite = totalBytesExpectedToWrite;
         }
-
     });
 }
 
